@@ -2,16 +2,27 @@
   <div id="Example">
       <div>
           <button @click="genaratePdf">genarate pdf</button>
+           <button @click="genarateHTML">genarate pdf with HTML2Canvas</button>
+      </div>
+      <!-- HTML2Canvas -->
+      <div ref="pdfCanvas1" style="width: fit-content;margin:auto">
+          <img alt="Vue logo" src="@/assets/logo.png">
+          <h1>PDF with HTML2Canvas</h1>
+          <HelloWorld msg="Welcome to Your Vue.js App"/>
       </div>
   </div>
 </template>
 
 <script>
 import jsPDF from "jspdf";
-
+import html2canvas from 'html2canvas';
+import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
     name : 'example',
+    components: {
+      HelloWorld
+    },
     data(){
         return{
             // for jsPDF : https://rawgit.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -106,6 +117,25 @@ export default {
 
                 },0);
 
+            }
+            catch (err) {
+                console.log(err);
+            }
+        },
+        async genarateHTML(){
+            try {
+                let pdf = new jsPDF(this.pdfOption);
+
+
+                let pdfCanvas1 = this.$refs.pdfCanvas1;
+                await html2canvas(pdfCanvas1, this.canvasOption).then((canvas) => {
+                    pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0 , 0)
+                });
+
+                setTimeout(() => {
+                    //download pdf file
+                    pdf.save(Date.now() + ".pdf");
+                },0);
             }
             catch (err) {
                 console.log(err);
