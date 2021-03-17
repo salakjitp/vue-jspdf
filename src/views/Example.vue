@@ -1,15 +1,24 @@
 <template>
   <div id="Example">
       <div>
-          <button @click="genaratePdf">genarate pdf</button>
-           <button @click="genarateHTML">genarate pdf with HTML2Canvas</button>
+        <button @click="genaratePdf">genarate pdf</button>
+        <button @click="genarateHTML">genarate pdf with HTML2Canvas</button>
+        <button @click="genarateImage">HTML to image</button>
       </div>
-      <!-- HTML2Canvas -->
-      <div ref="pdfCanvas1" style="width: fit-content;margin:auto">
-          <img alt="Vue logo" src="@/assets/logo.png">
-          <h1>PDF with HTML2Canvas</h1>
-          <HelloWorld msg="Welcome to Your Vue.js App"/>
+      <div style="display:flex;">
+           <!-- HTML2Canvas -->
+        <div ref="pdfCanvas1" style="width: fit-content;height: fit-content;">
+            <img alt="Vue logo" src="@/assets/logo.png">
+            <h1>PDF with HTML2Canvas</h1>
+            <HelloWorld msg="Welcome to Your Vue.js App"/>
+        </div>
+         <!-- Image -->
+        <div style="display:flex;flex-direction:column;border: 1px solid #ddd;border-radius: 4px;">
+            <span>Image from HTML2Canvas</span>
+            <img ref="imgCanvas">
+        </div>
       </div>
+
   </div>
 </template>
 
@@ -126,7 +135,6 @@ export default {
             try {
                 let pdf = new jsPDF(this.pdfOption);
 
-
                 let pdfCanvas1 = this.$refs.pdfCanvas1;
                 await html2canvas(pdfCanvas1, this.canvasOption).then((canvas) => {
                     pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0 , 0)
@@ -139,6 +147,17 @@ export default {
             }
             catch (err) {
                 console.log(err);
+            }
+        },
+        async genarateImage(){
+            try{
+                await html2canvas(this.$refs.pdfCanvas1, this.canvasOption).then((canvas) => {
+                    let imgCanvas = this.$refs.imgCanvas;
+                    imgCanvas.src = canvas.toDataURL('image/jpeg', 1.0);
+                });
+            }
+            catch(e){
+                console.log(e)
             }
         }
     }
